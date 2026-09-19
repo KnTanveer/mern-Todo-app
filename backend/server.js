@@ -1,27 +1,30 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import todoRoutes from './routes/todoRoutes.js';
+import express from "express";
+import dotenv from "dotenv";
+import todoRoutes from "./routes/todo.route.js";
+import { connectDB } from "./config/db.js";
+import cors from "cors";
+import path from "path";
+const PORT = process.env.PORT || 5000;
 
 dotenv.config();
 
 const app = express();
 
-app.listen(5005, () => {
-    connectMongo();
-    console.log("server running on localhost:5005");
-});
-
 app.use(express.json());
+// app.use(cors());
 
-app.use('/api/todo', todoRoutes);
+app.use("/api/todos", todoRoutes);
 
-const connectMongo = async () => {
-        try {
-            const conn = await mongoose.connect(process.env.MONGO_URI);
-            console.log("Mongo db connected");
-        } catch (error) {
-            console.log(error);
-            process.exit(1);
-        }
-    }
+const __dirname = path.resolve();
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "/frontend/dist")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+    });
+}
+
+app.listen(PORT, () => {
+    connectDB();
+    console.log("Server started at http://localhost:5000");
+});
