@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
         const todos = await Todo.find();
         res.json(todos);
     } catch (error) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
         const newTodo = await todo.save();
         res.status(201).json(newTodo);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        res.status(400).json({ message: error.message });
     }
 });
 
@@ -32,7 +32,9 @@ router.patch('/:id', async (req, res) => {
     try {
         const todo = await Todo.findById(req.params.id);
 
-        if (!todo) res.status(404).json({ message: 'Not found' });
+        if (!todo) {
+            return res.status(404).json({ message: 'Not found' });
+        }
 
         if (req.body.title !== undefined) {
             todo.title = req.body.title;
