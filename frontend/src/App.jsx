@@ -6,6 +6,8 @@ import { FaTrash } from "react-icons/fa6";
 import axios from 'axios';
 import './App.css'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 function App() {
 
   const [newTodo, setNewTodo] = useState('');
@@ -15,7 +17,7 @@ function App() {
 
   const fetchTodos = async () => {
     try {
-      const res = await axios.get("/api/todos");
+      const res = await axios.get(`${API_URL}/api/todos`);
       console.log(res.data);
       setTodos(res.data);
     } catch (error) {
@@ -31,7 +33,7 @@ function App() {
     e.preventDefault();
     if (!newTodo.trim()) return;
     try {
-      const response = await axios.post("/api/todos", { title: newTodo });
+      const response = await axios.post(`${API_URL}/api/todos`, { title: newTodo });
       setTodos([...todos, response.data]);
       setNewTodo("");
     } catch (error) {
@@ -46,7 +48,7 @@ function App() {
 
   const saveEdit = async (id) => {
     try {
-      const response = await axios.patch(`/api/todos/${id}`, {
+      const response = await axios.patch(`${API_URL}/api/todos/${id}`, {
         title: editedText,
       });
       setTodos(todos.map((todo) => (todo._id === id ? response.data : todo)));
@@ -58,7 +60,7 @@ function App() {
 
   const deleteTodo = async (id) => {
     try {
-      await axios.delete(`/api/todos/${id}`);
+      await axios.delete(`${API_URL}/api/todos/${id}`);
       setTodos(todos.filter((todo) => todo._id !== id));
     } catch (error) {
       console.log("Error deleting todo:", error);
@@ -68,7 +70,7 @@ function App() {
   const toggleTodo = async (id) => {
     try {
       const todo = todos.find((t) => t._id === id)
-      const res = await axios.patch(`/api/todos/${id}`, {
+      const res = await axios.patch(`${API_URL}/api/todos/${id}`, {
         completed: !todo.completed,
       });
       setTodos(todos.map((t) => t._id === id ? res.data : t));
